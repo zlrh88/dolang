@@ -1,4 +1,4 @@
-import 'package:uangkoo/models/database.dart';
+import 'package:dolang/models/database.dart';
 
 class TransactionWithCategory {
   final Transaction transaction;

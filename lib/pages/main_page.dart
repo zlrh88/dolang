@@ -6,10 +6,10 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:uangkoo/models/database.dart';
-import 'package:uangkoo/pages/category_page.dart';
-import 'package:uangkoo/pages/home_page.dart';
-import 'package:uangkoo/pages/transaction_page.dart';
+import 'package:dolang/models/database.dart';
+import 'package:dolang/pages/category_page.dart';
+import 'package:dolang/pages/home_page.dart';
+import 'package:dolang/pages/transaction_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -116,7 +116,7 @@ class _MainPageState extends State<MainPage> {
                   });
                 });
               },
-              backgroundColor: Colors.green,
+              backgroundColor: Colors.deepPurple,
               child: Icon(Icons.add)),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -157,7 +157,7 @@ class _MainPageState extends State<MainPage> {
             : CalendarAppBar(
                 fullCalendar: true,
                 backButton: false,
-                accent: Colors.green,
+                accent: Colors.deepPurple,
                 locale: 'en',
                 onDateChanged: (value) {
                   setState(() {

@@ -224,10 +224,11 @@ class $CategoriesTable extends Categories
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+    'id', aliasedName, false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    // defaultConstraints: 'PRIMARY KEY AUTOINCREMENT')
+  );
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -589,10 +590,11 @@ class $TransactionsTable extends Transactions
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+    'id', aliasedName, false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    // defaultConstraints: 'PRIMARY KEY AUTOINCREMENT')
+  );
   final VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
   @override

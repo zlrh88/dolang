@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:uangkoo/pages/home_page.dart';
-import 'package:uangkoo/pages/main_page.dart';
+import 'package:dolang/pages/main_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,6 +11,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: MainPage(), theme: ThemeData(primarySwatch: Colors.green));
+        home: MainPage(), theme: ThemeData(primarySwatch: Colors.deepPurple));
   }
 }

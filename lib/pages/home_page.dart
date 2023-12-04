@@ -6,10 +6,11 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:uangkoo/models/database.dart';
-import 'package:uangkoo/models/transaction_with_category.dart';
-import 'package:uangkoo/pages/category_page.dart';
-import 'package:uangkoo/pages/transaction_page.dart';
+import 'package:dolang/models/database.dart';
+import 'package:dolang/models/transaction_with_category.dart';
+import 'package:dolang/pages/category_page.dart';
+import 'package:dolang/pages/transaction_page.dart';
+import 'package:money_formatter/money_formatter.dart';
 
 class HomePage extends StatefulWidget {
   final DateTime selectedDate;
@@ -21,6 +22,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final AppDb database = AppDb();
+
+  MoneyFormatter fmf = MoneyFormatter(
+      amount: 123456789.90235,
+      settings: MoneyFormatterSettings(
+        symbol: 'Rp',
+      ));
 
   @override
   void initState() {
@@ -75,9 +82,24 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     height: 5,
                                   ),
-                                  Text('Rp 3.800.000',
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 14, color: Colors.white)),
+                                  FutureBuilder(
+                                      future: database.sumAmount(2),
+                                      builder: (context, snapshot) {
+                                        CircularProgressIndicator();
+                                        if (snapshot.hasData) {
+                                          return Text(
+                                              'Rp.' + snapshot.data!.toString(),
+                                              style: GoogleFonts.montserrat(
+                                                  fontSize: 14,
+                                                  color: Colors.white));
+                                        } else if (snapshot.hasError)
+                                          return Text(
+                                              snapshot.error.toString());
+                                        return Text('Belum ada Transaksi',
+                                            style: GoogleFonts.montserrat(
+                                                fontSize: 14,
+                                                color: Colors.white));
+                                      })
                                 ],
                               ),
                             ],
@@ -105,9 +127,24 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     height: 5,
                                   ),
-                                  Text('Rp 1.600.000',
-                                      style: GoogleFonts.montserrat(
-                                          fontSize: 14, color: Colors.white)),
+                                  FutureBuilder(
+                                      future: database.sumAmount(1),
+                                      builder: (context, snapshot) {
+                                        CircularProgressIndicator();
+                                        if (snapshot.hasData) {
+                                          return Text(
+                                              'Rp.' + snapshot.data!.toString(),
+                                              style: GoogleFonts.montserrat(
+                                                  fontSize: 14,
+                                                  color: Colors.white));
+                                        } else if (snapshot.hasError)
+                                          return Text(
+                                              snapshot.error.toString());
+                                        return Text('Belum ada Transaksi',
+                                            style: GoogleFonts.montserrat(
+                                                fontSize: 14,
+                                                color: Colors.white));
+                                      })
                                 ],
                               ),
                             ],
@@ -154,28 +191,38 @@ class _HomePageState extends State<HomePage> {
                                       children: [
                                         IconButton(
                                             icon: Icon(Icons.delete),
-                                            onPressed: () {}),
+                                            onPressed: () async {
+                                              await database.deleteTransaction(
+                                                  snapshot.data![index]
+                                                      .transaction.id);
+                                              setState(() {});
+                                            }),
                                         SizedBox(
                                           width: 10,
                                         ),
                                         IconButton(
                                           icon: Icon(Icons.edit),
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .push(MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TransactionPage(
-                                                          transactionsWithCategory:
-                                                              snapshot.data![
-                                                                  index]),
-                                                ))
-                                                .then((value) {});
+                                          onPressed: () async {
+                                            setState(() {
+                                              Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        TransactionPage(
+                                                            transactionsWithCategory:
+                                                                snapshot.data![
+                                                                    index]),
+                                                  ))
+                                                  .then((value) {});
+                                            });
                                           },
                                         )
                                       ],
                                     ),
                                     subtitle: Text(
-                                        snapshot.data![index].category.name),
+                                        snapshot.data![index].category.name +
+                                            ":" +
+                                            snapshot.data![index].transaction
+                                                .description),
                                     leading: Container(
                                         padding: EdgeInsets.all(3),
                                         decoration: BoxDecoration(
@@ -194,7 +241,13 @@ class _HomePageState extends State<HomePage> {
                                                 color: Colors.red[400],
                                               )),
                                     title: Text(
-                                      snapshot.data![index].transaction.amount
+                                      fmf
+                                          .copyWith(
+                                              amount: snapshot.data![index]
+                                                  .transaction.amount
+                                                  .toDouble())
+                                          .output
+                                          .symbolOnLeft
                                           .toString(),
                                     ),
                                   ),

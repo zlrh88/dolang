@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uangkoo/models/category.dart';
-import 'package:uangkoo/models/database.dart';
+import 'package:dolang/models/category.dart';
+import 'package:dolang/models/database.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({Key? key}) : super(key: key);

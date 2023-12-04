@@ -4,9 +4,9 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:uangkoo/models/database.dart';
-import 'package:uangkoo/models/transaction.dart';
-import 'package:uangkoo/models/transaction_with_category.dart';
+import 'package:dolang/models/database.dart';
+import 'package:dolang/models/transaction.dart';
+import 'package:dolang/models/transaction_with_category.dart';
 
 class TransactionPage extends StatefulWidget {
   final TransactionWithCategory? transactionsWithCategory;
@@ -37,6 +37,12 @@ class _TransactionPageState extends State<TransactionPage> {
             transaction_date: date,
             created_at: now,
             updated_at: now));
+  }
+
+  Future update(int transactionId, int amount, int categoryId,
+      DateTime transactionDate, String nameDetail) async {
+    await database.updateTransactionRepo(
+        transactionId, amount, categoryId, transactionDate, nameDetail);
   }
 
   @override
@@ -71,7 +77,7 @@ class _TransactionPageState extends State<TransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Add Transacrtion")),
+      appBar: AppBar(title: Text("Add Transaction")),
       body: SingleChildScrollView(
         child: SafeArea(
             child: Column(
@@ -124,32 +130,44 @@ class _TransactionPageState extends State<TransactionPage> {
                 future: getAllCategory(type),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
                   } else {
                     if (snapshot.hasData) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: DropdownButton<Category>(
-                          isExpanded: true,
-                          value: (selectedCategory == null)
-                              ? snapshot.data!.first
-                              : selectedCategory,
-                          icon: const Icon(Icons.arrow_downward),
-                          elevation: 16,
-                          onChanged: (Category? newValue) {
-                            print(newValue!.name);
-                            setState(() {
-                              selectedCategory = newValue;
-                            });
-                          },
-                          items: snapshot.data!.map((Category value) {
-                            return DropdownMenuItem<Category>(
-                              value: value,
-                              child: Text(value.name),
-                            );
-                          }).toList(),
-                        ),
-                      );
+                      if (snapshot.data!.isNotEmpty) {
+                        selectedCategory = (selectedCategory == null)
+                            ? snapshot.data!.first
+                            : selectedCategory;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: DropdownButton<Category>(
+                            isExpanded: true,
+                            value: (selectedCategory == null)
+                                ? snapshot.data!.first
+                                : selectedCategory,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            onChanged: (Category? newValue) {
+                              print(newValue!.name);
+                              setState(() {
+                                selectedCategory = newValue;
+                              });
+                            },
+                            items: snapshot.data!.map((Category value) {
+                              return DropdownMenuItem<Category>(
+                                value: value,
+                                child: Text(value.name),
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      } else {
+                        return Center(
+                          child: Text("Data Kosong"),
+                        );
+                      }
+                      ;
                     } else {
                       return Text("Belum ada kategory");
                     }
@@ -207,12 +225,21 @@ class _TransactionPageState extends State<TransactionPage> {
             Center(
                 child: ElevatedButton(
                     onPressed: () {
-                      insert(
-                          descriptionController.text,
-                          selectedCategory!.id,
-                          int.parse(amountController.text),
-                          DateTime.parse(dateController.text));
-                      Navigator.pop(context, true);
+                      setState(() {
+                        (widget.transactionsWithCategory == null)
+                            ? insert(
+                                descriptionController.text,
+                                selectedCategory!.id,
+                                int.parse(amountController.text),
+                                DateTime.parse(dateController.text))
+                            : update(
+                                widget.transactionsWithCategory!.transaction.id,
+                                int.parse(amountController.text),
+                                selectedCategory!.id,
+                                DateTime.parse(dateController.text),
+                                descriptionController.text);
+                        Navigator.pop(context, true);
+                      });
                     },
                     child: Text('Save')))
           ],
